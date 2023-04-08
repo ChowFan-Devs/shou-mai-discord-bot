@@ -142,7 +142,7 @@ module.exports = {
                 const apiAccountData = await getAccountData(accountData.name, accountData.tagline, accountData.region);
 
                 if(apiAccountData.error) {
-                    return interaction.editReply(apiAccountData.error);
+                    return interaction.reply(apiAccountData.error);
                 }
 
                 const accountEmbed = await createAccountEmbed(accountData.name, accountData.tagline, apiAccountData.picture, apiAccountData.level, apiAccountData.rank, apiAccountData.wide);
