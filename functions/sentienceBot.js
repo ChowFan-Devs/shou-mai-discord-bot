@@ -152,11 +152,21 @@ async function respondSentience(message) {
         const randomIndex = Math.floor(Math.random() * errorMessages.length);
         const errorMessage = errorMessages[randomIndex];
 
+        let errorId = "*shrugs*"
+
+        try {
+            errorId = error.response.status + ": " + error.response.statusText
+        } catch(err)
+        {
+            console.log("ERROR")
+        }
+
         const errorEmbed = new EmbedBuilder()
             .setColor(0xFF0000)
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
             .setTitle("An Error Occured")
             .setDescription(errorMessage)
+            .setFooter(errorId)
             .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
         
         // Edit the message to display the error message
