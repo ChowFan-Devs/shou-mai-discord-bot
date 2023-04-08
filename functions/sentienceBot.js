@@ -112,6 +112,8 @@ async function respondSentience(message) {
     } catch (error) {
         console.error("Error while creating chat completion:", error);
 
+        console.log(typeof error)
+
         const userID = "712437132240617572"
 
         const errorMessages = [
@@ -152,22 +154,22 @@ async function respondSentience(message) {
         const randomIndex = Math.floor(Math.random() * errorMessages.length);
         const errorMessage = errorMessages[randomIndex];
 
-        let errorId = "*shrugs*"
+        // let errorId = "*shrugs*"
 
-        try {
-            const newError = error.json()
-            errorId = newError.response.status + ": " + newError.response.statusText
-        } catch(err)
-        {
-            console.log("ERROR")
-        }
+        // try {
+        //     const newError = error.json()
+        //     errorId = newError.response.status + ": " + newError.response.statusText
+        // } catch(err)
+        // {
+        //     console.log("ERROR")
+        // }
 
         const errorEmbed = new EmbedBuilder()
             .setColor(0xFF0000)
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
             .setTitle("An Error Occured")
             .setDescription(errorMessage)
-            .setFooter(errorId)
+            .setFooter("footerplaceholder")
             .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
         
         // Edit the message to display the error message
