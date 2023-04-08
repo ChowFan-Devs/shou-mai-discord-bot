@@ -2,14 +2,15 @@
   "name": "shoumai",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "node app.js"
+    "test": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.9.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "openai": "^3.2.1"
   }
 }

@@ -5,7 +5,7 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.commands = new Collection();
 
@@ -22,6 +22,25 @@ for (const file of commandFiles) {
 		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
+
+const { respondSentience } = require("./functions/sentienceBot")
+
+client.on("messageCreate", (message) => {
+    if (message.author.bot) return false;
+
+    if (message.content.includes("@here") || message.content.includes("@everyone") || message.type == "REPLY") return false;
+
+	// Check if the message is in the specified channel
+    if (message.channel.id === "1094109647092334623" || message.channel.id === "1094196420661231680") {
+        respondSentience(message);
+    } else
+	{
+		if (message.mentions.has(client.user.id)) {
+			respondSentience(message);
+		}
+	}
+});
+
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 
