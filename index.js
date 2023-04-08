@@ -30,9 +30,15 @@ client.on("messageCreate", (message) => {
 
     if (message.content.includes("@here") || message.content.includes("@everyone") || message.type == "REPLY") return false;
 
-    if (message.mentions.has(client.user.id)) {
+	// Check if the message is in the specified channel
+    if (message.channel.id === "1094109647092334623" || message.channel.id === "1094196420661231680") {
         respondSentience(message);
-    }
+    } else
+	{
+		if (message.mentions.has(client.user.id)) {
+			respondSentience(message);
+		}
+	}
 });
 
 // When the client is ready, run this code (only once)
