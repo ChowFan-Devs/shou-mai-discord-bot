@@ -133,7 +133,6 @@ module.exports = {
             interaction.editReply({embeds: [linkedEmbed]});
         }
         else if (interaction.options.getSubcommand() === 'account') {
-            await interaction.deferReply({ephemeral: false});
 
             const accountData = fetchAccountData(interaction.user.id);
 
@@ -148,7 +147,7 @@ module.exports = {
 
                 const accountEmbed = await createAccountEmbed(accountData.name, accountData.tagline, apiAccountData.picture, apiAccountData.level, apiAccountData.rank, apiAccountData.wide);
 
-                interaction.editReply({embeds: [accountEmbed]});
+                interaction.reply({embeds: [accountEmbed]});
             }
         }
     },
