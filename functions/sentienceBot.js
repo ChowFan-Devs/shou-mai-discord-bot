@@ -123,6 +123,9 @@ async function respondSentience(message) {
         let response = {}
         let errData = { response: {status: "069", statusText: "Unknown Error >.<"} }
 
+        let jsonObject = {}
+        let shouValue = ""
+
         try {
             const completion = await openai.createChatCompletion({
                 model: "gpt-3.5-turbo",
@@ -131,6 +134,14 @@ async function respondSentience(message) {
             });
     
             response = completion.data.choices[0].message["content"];
+
+            try {
+                jsonObject = JSON.parse(response);
+                shouValue = jsonObject["Shou"];
+            } catch(e)
+            {
+                shouValue = response
+            }
 
         } catch (error)
         {
@@ -148,8 +159,7 @@ async function respondSentience(message) {
             return msgRef.edit({ embeds: [errorEmbed] });
         }
 
-        const jsonObject = JSON.parse(response);
-        const shouValue = jsonObject["Shou"];
+        
 
         let emotionValue = emotions["Normal"]
         try {
