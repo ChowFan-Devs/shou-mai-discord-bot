@@ -6,7 +6,7 @@ const { brain } = require('./sentienceBrain')
 const { EmbedBuilder } = require('discord.js');
 
 const fs = require("fs");
-const historyFilePath = "./globalMessageHistory.json";
+const historyFilePath = "./database/globalMessageHistory.json";
 
 const configuration = new Configuration({
   apiKey: openAiKey,
