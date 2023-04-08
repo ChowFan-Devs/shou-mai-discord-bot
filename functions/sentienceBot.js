@@ -155,7 +155,8 @@ async function respondSentience(message) {
         let errorId = "*shrugs*"
 
         try {
-            errorId = error.response.status + ": " + error.response.statusText
+            const newError = error.json()
+            errorId = newError.response.status + ": " + newError.response.statusText
         } catch(err)
         {
             console.log("ERROR")
