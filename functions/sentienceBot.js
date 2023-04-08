@@ -167,7 +167,7 @@ async function respondSentience(message) {
 
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
-            .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
+            .setAuthor({ name: `replying to ${message.author.name}`, iconURL: message.author.avatar})
             .setDescription(shouValue)
             .setThumbnail(emotionValue)
 
