@@ -120,6 +120,9 @@ async function respondSentience(message) {
 
     try {
 
+        let response = {}
+        let errData = { response: {status: "069", statusText: "Unknown Error >.<"} }
+
         try {
             const completion = await openai.createChatCompletion({
                 model: "gpt-3.5-turbo",
@@ -127,18 +130,19 @@ async function respondSentience(message) {
                 messages: messages,
             });
     
-            let response = completion.data.choices[0].message["content"];
-    
+            response = completion.data.choices[0].message["content"];
             console.log(response);
+
         } catch (error)
         {
+            errData = error
             console.error("Error while creating chat completion:", error);
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
                 .setTitle("An Error Occured")
                 .setDescription(generateErrorMessage())
-                .setFooter(`OpenAI API error: ${error.response.status} ${error.response.statusText}`)
+                .setFooter({text: `Error: ${errData.response.status} ${errData.response.statusText}`})
                 .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
             
             // Edit the message to display the error message
@@ -147,6 +151,7 @@ async function respondSentience(message) {
 
         const jsonObject = JSON.parse(response);
         const shouValue = jsonObject["Shou"];
+
         let emotionValue = emotions["Normal"]
         try {
             emotionValue = emotions[jsonObject["Emotion"]];
