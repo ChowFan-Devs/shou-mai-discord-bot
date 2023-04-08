@@ -128,3 +128,4 @@ dist
 config.json
 database/linkedRiotAccounts.json
 database/globalMessageHistory.json
+database/globalMessageHistory.json

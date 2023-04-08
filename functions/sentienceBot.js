@@ -131,7 +131,6 @@ async function respondSentience(message) {
             });
     
             response = completion.data.choices[0].message["content"];
-            console.log(response);
 
         } catch (error)
         {
@@ -167,7 +166,7 @@ async function respondSentience(message) {
 
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
-            .setAuthor({ name: `replying to ${message.author.name}`, iconURL: message.author.avatar})
+            .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue)
             .setThumbnail(emotionValue)
 
