@@ -270,7 +270,7 @@ async function respondSentience(message) {
             errData = error
 
             if(errData.response.status == 400){
-                globalMessageHistory.shift();
+                globalMessageHistory.pop();
             }
 
             console.error("Error while creating chat completion:", error);
