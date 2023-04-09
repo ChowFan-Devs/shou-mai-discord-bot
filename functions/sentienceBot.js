@@ -162,12 +162,34 @@ const getDate = () => {
     return gmt8Date
 }
 
+async function addOrUpdateUser(userID, username) {
+    const userData = await readUserData();
+    const userIndex = userData.users.findIndex(user => user.ID === userID);
+
+    if (userIndex === -1) {
+        // If the user is not in the database, add them with default values
+        userData.users.push({
+            "ID": userID,
+            "NAME": [],
+            "USERNAME": username,
+            "HARDCODED_ABOUT": "",
+            "ABOUT": [],
+            "FRIENDSHIP": 0
+        });
+        saveUserData(userData);
+    }
+}
+
 
 async function respondSentience(message) {
 
     const userID = message.author.id;
+    const username = message.author.username;
     const userMessage = message.content.replace("<@1093966109838946374>", "Shou Mai");
 
+    // Ensure the user is in the database or add them with default values
+    await addOrUpdateUser(userID, username);
+    
     const thinkingEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
@@ -281,6 +303,8 @@ async function respondSentience(message) {
 
         msgRef.edit("");
         msgRef.edit({ embeds: [messageEmbed] });
+
+        console.log(jsonObject)
 
         // Update the friendship value in userData.json
         await updateFriendshipValue(userID, friendshipChange);
