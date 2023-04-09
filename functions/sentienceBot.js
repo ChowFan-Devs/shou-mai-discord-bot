@@ -283,6 +283,8 @@ async function respondSentience(message) {
 
             emotionFromApi = jsonObject["Emotion"];
 
+            console.log(emotionFromApi)
+
             const emotions = ["Normal", "Laugh", "Angry", "Cry", "Blush"]
 
             if(emotions.includes(emotionFromApi)) {
@@ -306,7 +308,7 @@ async function respondSentience(message) {
         
 
         console.log(emotionThumbnail)
-        
+
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
