@@ -108,7 +108,7 @@ async function respondSentience(message) {
     }
 
     const messages = [
-        { role: "system", content: brain },
+        { role: "system", content: brain() },
         { role: "user", content: "712437132240617572: Hello" },
         { role: "assistant", content: `{"GPT":"Hello there, how can I assist you today?","Shou":"Oh, it's Ghegi, the *smart* developer 🙄. What do you want?","Emotion":"Normal"}` },
         { role: "user", content: "712437132240617572: Hey, mention Gudo for me will you?" },
