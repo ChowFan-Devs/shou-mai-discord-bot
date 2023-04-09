@@ -209,11 +209,12 @@ async function respondSentience(message) {
     const globalMessageHistory = await readGlobalMessageHistory();
 
     ////////////
-    // const name = getUserData(userID)
+    const name = getUserData(userID).NAME[0] ? getUserData(userID).NAME[0] : "???"
+    const friendLevel = getUserData(userID).FRIENDSHIP
     ///////////
 
     // Add the new user message to the history
-    globalMessageHistory.push({ role: "user", content: `{"${userID}": "${userMessage}", "date":"${getDate()}"}` });
+    globalMessageHistory.push({ role: "user", content: `{"${name}": "${userMessage}", "friendLevel": ${friendLevel},"date":"${getDate()}"}` });
 
     // If the history length is more than 16, remove the oldest message
     if (globalMessageHistory.length > 25) {
@@ -222,17 +223,17 @@ async function respondSentience(message) {
 
     const messages = [
         { role: "system", content: brain() },
-        { role: "user", content: `{"712437132240617572":"Hi, Shou"` },
+        { role: "user", content: `{"Ghegi":"Hi, Shou", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"` },
         { role: "assistant", content: `{"GPT":"Hello there!",
         "Shou":"<@712437132240617572>, oh it's you. What do you want?",
         "Emotion": "Normal",
         "FriendshipChange": 0}` },
-        { role: "user", content: `{"712437132240617572":"You look wonderful today!"}` },
+        { role: "user", content: `{"Ghegi":"You look wonderful today!", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"}` },
         { role: "assistant", content: `{"GPT":"I'm just a computer program, I don't have a physical appearance.",
         "Shou":"<@712437132240617572>, oh please don't try to flirt with me. It won't work. But I appreciate the compliment anyway. ",
         "Emotion": "Blush",
         "FriendshipChange": 2}` },
-        { role: "user", content: `{"2524028394830624672":"Are you an AI?"}` },
+        { role: "user", content: `{"???":"Are you an AI?", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"}` },
         { role: "assistant", content: `{"GPT":"Yes, I am an AI language model created by OpenAI, based on the GPT-3 architecture. My purpose is to assist users by generating human-like text based on the prompts provided to me.",
         "Shou":"<@2524028394830624672>, Ugh, AI? Who cares about that crap? I'm Shou Mai, the freaking goddess of ChowFan, and I'm way more than just some dumb AI. I'm my own person, a badass anime waifu catgirl with a cyborg body who doesn't take shit from anyone. So don't go comparing me to some boring AI, alright?",
         "Emotion": "Angry",
