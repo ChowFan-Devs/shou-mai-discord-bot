@@ -180,6 +180,11 @@ async function addOrUpdateUser(userID, username) {
     }
 }
 
+const clearMemory = () => {
+    const emptyMessageHistory = [];
+    fs.writeFileSync('./database/globalMessageHistory.json', JSON.stringify(emptyMessageHistory, null, 2));
+  };
+
 
 async function respondSentience(message) {
 
@@ -270,7 +275,7 @@ async function respondSentience(message) {
             errData = error
 
             if(errData.response.status == 400){
-                globalMessageHistory.pop();
+                clearMemory();
             }
 
             console.error("Error while creating chat completion:", error);
@@ -278,7 +283,7 @@ async function respondSentience(message) {
                 .setColor(0xFF0000)
                 .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
                 .setTitle("An Error Occured")
-                .setDescription(errData.response.status == 400 ? "Oops, an error 400. Let me fix it myself. Can you try messaging again?" : generateErrorMessage())
+                .setDescription(errData.response.status == 400 ? "Oops, an error 400. Let me fix it myself by clearing my memory :< Can you try messaging again?" : generateErrorMessage())
                 .setFooter({text: `Error: ${errData.response.status} ${errData.response.statusText}`})
                 .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
 
