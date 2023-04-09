@@ -303,11 +303,10 @@ async function respondSentience(message) {
 
         // Save global message history to the filesystem
         saveGlobalMessageHistory(globalMessageHistory);
-
-        const userFriendship = getUserData(message.author.id).FRIENDSHIP
         
         // Update the friendship value in userData.json
         await updateFriendshipValue(userID, friendshipChange);
+        const userFriendship = getUserData(message.author.id).FRIENDSHIP
 
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
