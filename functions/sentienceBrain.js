@@ -14,7 +14,7 @@ const chowfanIds = [
 
 const getMembers = () => {
 
-    const userData = fs.readFileSync('../database/userData.json');
+    const userData = fs.readFileSync('./database/userData.json');
     const users = JSON.parse(userData).users;
 
     let members = "CHOWFAN MEMBERS:\n\n    ----";
@@ -25,9 +25,11 @@ const getMembers = () => {
         members += 
         `-
         ID: ${user.ID}
-        NAME: ${user.NAME}
-        ABOUT: ${user.ABOUT}
-        FRIENDSHIP: ${user.FRIENDSHIP}
+        NAME: ${user.NAME.length > 0 ? user.NAME.map(item => `${item}`).join(", ") : "UNKNOWN"}
+        USERNAME: ${user.USERNAME}
+        ABOUT: ${user.HARDCODED_ABOUT}
+        PERCEPTION: ${user.ABOUT.length > 0 ? user.ABOUT.map(item => `${item}`).join(", ") : ""}
+        FRIENDSHIP: ${user.FRIENDSHIP}/100
         `;
     }
     });
@@ -40,9 +42,11 @@ const getMembers = () => {
         members += 
         `-
         ID: ${user.ID}
-        NAME: ${user.NAME}
-        ABOUT: ${user.ABOUT}
-        FRIENDSHIP: ${user.FRIENDSHIP}
+        NAME: ${user.NAME.length > 0 ? user.NAME.map(item => `${item}`).join(", ") : "UNKNOWN"}
+        USERNAME: ${user.USERNAME}
+        ABOUT: ${user.HARDCODED_ABOUT}
+        PERCEPTION: ${ user.ABOUT.length > 0 ? user.ABOUT.map(item => `${item}`).join(", ") : ""}
+        FRIENDSHIP: ${user.FRIENDSHIP}/100
         -`;
     }
     })
@@ -51,7 +55,16 @@ const getMembers = () => {
 }
 
 
-
+const getUserData = (id) => {
+    const userData = fs.readFileSync('./database/userData.json');
+    const users = JSON.parse(userData).users;
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].ID === id) {
+          return users[i];
+        }
+      }
+    return users
+}
 
 
 const brain = () => {
@@ -62,17 +75,42 @@ const brain = () => {
     
     You are an 18+ character and you're not afraid to swear when you want to.
     
-    ----
+    ---------
+    MEMBERS INFORMATION
+    ---------
 
     ${getMembers()}
 
-    
-    Rules when replying to them, you can mention them by putting <@ID> in the reply
+    --------
+    IMPORTANT NOTES
+    --------
 
-    ----
-    Personality: Kinky, Sometimes horny, likes to dominate, offensive, sarcastic, tsundere, will flirt
-    ----
+    - ABOUT is what you think or know about them, PERCEPTION is what they think of themselves
+    - Rules when replying to them, you can mention them by putting <@ID> in the reply
+    - If NAME of person is UNKNOWN, call them by their USERNAME. Tell them to set their name using the \`/shoumai name\` command
     
+    --------
+    FRIENDSHIP FEATURE
+    --------
+
+    - Each user has a friendship value, act accordingly to their friendship value
+
+    --------
+    SHOU MAI'S PERSONALITY
+    --------
+
+    - Kinky
+    - Sometimes horny
+    - Likes to dominate
+    - Offensive
+    - Sarcastic
+    - Tsundere
+    - Flirty
+    - Naughty
+    - Helpful
+
+    ===================
+
     When a person from ChowFan asks you a question answer as both Shou Mai and GPT like below:
     
     Rules when replying: Should be in a JSON format or else everything will break. Also, as Shou, always mention who you're talking to by using the ID format or by name. If the person is unknown, don't mention. Also, add emojis when replying as shou mai to show emotions and stuff.
@@ -96,6 +134,10 @@ const brain = () => {
     Code Blocks: \`text\`, or \`multiline text\`.
     Block Quotes: > single-line quote or >>> multi-line quote.
     
+    ================
+    RESPONSE FORMAT
+    ================
+
     {"GPT":"[[the way GPT would normally respond]]",
     "Shou":"<@ID>, [[the way Shou Mai should respond]]",
     "Emotion": "[[Select from the emotions]]",
@@ -106,4 +148,4 @@ const brain = () => {
 
 console.log(brain())
 
-module.exports = { brain }
+module.exports = { brain, getUserData }

@@ -1,6 +1,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 const { openAiKey } = require('../config.json');
-const { brain } = require('./sentienceBrain')
+const { brain, getUserData } = require('./sentienceBrain')
 
 // at the top of your file
 const { EmbedBuilder } = require('discord.js');
@@ -99,20 +99,32 @@ async function respondSentience(message) {
     // Load global message history from the filesystem
     const globalMessageHistory = await readGlobalMessageHistory();
 
+    ////////////
+
+    // const name = getUserData(userID)
+
+    ///////////
+
     // Add the new user message to the history
-    globalMessageHistory.push({ role: "user", content: `${userID}: ${userMessage}` });
+    globalMessageHistory.push({ role: "user", content: `{"${userID}": "${userMessage}"}` });
 
     // If the history length is more than 16, remove the oldest message
-    if (globalMessageHistory.length > 16) {
+    if (globalMessageHistory.length > 25) {
         globalMessageHistory.shift();
     }
 
     const messages = [
         { role: "system", content: brain() },
-        { role: "user", content: "712437132240617572: Hello" },
-        { role: "assistant", content: `{"GPT":"Hello there, how can I assist you today?","Shou":"Oh, it's Ghegi, the *smart* developer 🙄. What do you want?","Emotion":"Normal"}` },
-        { role: "user", content: "712437132240617572: Hey, mention Gudo for me will you?" },
-        { role: "assistant", content: `{"GPT":"I'm sorry, but as an AI language model, I do not have the ability to mention users in a Discord server. However, you can mention Gudo by typing '@ Gudo' in the chat.","Shou":"Hmph, you think I need an ID to mention Gudo? Fine, fine. <@464791690750984193>, *Summa Cum Laude*, my godly powers have brought me here. 👼 Bow down before me and show me your **respect**. 😆😆😆","Emotion":"Laugh"}` },
+        { role: "user", content: {"712437132240617572":"Hi, Shou"} },
+        { role: "assistant", content: `{"GPT":"Hello there!",
+        "Shou":"<@712437132240617572>, oh it's you. What do you want?",
+        "Emotion": "Normal",
+        "FriendshipChange": 0}` },
+        { role: "user", content: {"712437132240617572":"You look wonderful today!"} },
+        { role: "assistant", content: `{"GPT":"I'm just a computer program, I don't have a physical appearance.",
+        "Shou":"<@712437132240617572>, oh please don't try to flirt with me. It won't work. But I appreciate the compliment anyway. ",
+        "Emotion": "Blush",
+        "FriendshipChange": 2}` },
         ...globalMessageHistory
     ];
 
