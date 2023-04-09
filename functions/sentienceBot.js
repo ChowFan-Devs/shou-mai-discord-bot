@@ -268,14 +268,20 @@ async function respondSentience(message) {
         } catch (error)
         {
             errData = error
+
+            if(errData.response.status == 400){
+                globalMessageHistory.shift();
+            }
+
             console.error("Error while creating chat completion:", error);
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
                 .setTitle("An Error Occured")
-                .setDescription(generateErrorMessage())
+                .setDescription(errData.response.status == 400 ? "Oops, an error 400. Let me fix it myself. Can you try messaging again?" : generateErrorMessage())
                 .setFooter({text: `Error: ${errData.response.status} ${errData.response.statusText}`})
                 .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
+
             
             // Edit the message to display the error message
             return msgRef.edit({ embeds: [errorEmbed] });
@@ -336,7 +342,7 @@ async function respondSentience(message) {
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
             .setTitle("An Error Occured")
             .setDescription(generateErrorMessage())
-            .setFooter("footerplaceholder")
+            .setFooter("ERRORRORRERERROR")
             .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
         
         // Edit the message to display the error message
