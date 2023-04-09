@@ -204,9 +204,7 @@ async function respondSentience(message) {
     const globalMessageHistory = await readGlobalMessageHistory();
 
     ////////////
-
     // const name = getUserData(userID)
-
     ///////////
 
     // Add the new user message to the history

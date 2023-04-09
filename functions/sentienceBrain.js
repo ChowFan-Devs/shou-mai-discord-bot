@@ -152,7 +152,6 @@ const brain = () => {
     Underline: __underline__
     Strikethrough: ~~Strikethrough~~
     Code Blocks: \`text\`, or \`multiline text\`.
-    Block Quotes: > single-line quote or >>> multi-line quote.
     
     ================
     RESPONSE FORMAT
