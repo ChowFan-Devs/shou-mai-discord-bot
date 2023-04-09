@@ -261,6 +261,7 @@ async function respondSentience(message) {
                 friendshipChange = jsonObject["FriendshipChange"]
             } catch(e)
             {
+                console.log(e)
                 shouValue = "(Shou Mai experienced an error in her programming. >.<)"
             }
 
