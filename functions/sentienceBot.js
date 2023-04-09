@@ -305,7 +305,10 @@ async function respondSentience(message) {
         }
 
         // Add the response to the history
-        globalMessageHistory.push({ role: "assistant", content: response });
+
+        jsonObject["Shou"] = shouValue
+
+        globalMessageHistory.push({ role: "assistant", content: JSON.stringify(jsonObject) });
 
         // Save global message history to the filesystem
         saveGlobalMessageHistory(globalMessageHistory);
