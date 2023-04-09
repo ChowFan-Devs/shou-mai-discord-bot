@@ -256,7 +256,7 @@ async function respondSentience(message) {
                 friendshipChange = jsonObject["FriendshipChange"]
             } catch(e)
             {
-                shouValue = response
+                shouValue = "(Shou Mai experienced an error in her programming. >.<)"
             }
 
         } catch (error)
