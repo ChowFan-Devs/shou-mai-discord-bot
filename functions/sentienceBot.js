@@ -285,9 +285,9 @@ async function respondSentience(message) {
 
             console.log(emotionFromApi)
 
-            const emotionList = ["Normal", "Laugh", "Angry", "Cry", "Blush"]
+            const emotions = ["Normal", "Laugh", "Angry", "Cry", "Blush"]
 
-            if(emotionList.includes(emotionFromApi)) {
+            if(emotions.includes(emotionFromApi)) {
                 emotionThumbnail = emotions[emotionFromApi]
             } else
             {
@@ -306,8 +306,8 @@ async function respondSentience(message) {
 
         const userFriendship = getUserData(message.author.id).FRIENDSHIP
         
-        // Update the friendship value in userData.json
-        await updateFriendshipValue(userID, friendshipChange);
+
+        console.log(emotionThumbnail)
 
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
@@ -320,6 +320,9 @@ async function respondSentience(message) {
         msgRef.edit({ embeds: [messageEmbed] });
 
         console.log(jsonObject)
+
+        // Update the friendship value in userData.json
+        await updateFriendshipValue(userID, friendshipChange);
 
     } catch (error) {
         console.error("Error while creating chat completion:", error);
