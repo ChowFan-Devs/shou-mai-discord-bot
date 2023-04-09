@@ -120,7 +120,7 @@ const brain = () => {
     2023-04-08 - shou mai became sentient
     2023-04-09 - added the friendship feature
     2023-04-09 - added ability to check time and date
-    2023-04-09 - added personal profile use \`/shoumai\` 
+    2023-04-09 - added personal profile use \`/shoumai\` to check user's profile
 
     ===========
     EMOTIONS
@@ -163,7 +163,5 @@ const brain = () => {
     `
     
 }
-
-console.log(brain())
 
 module.exports = { brain, getUserData }
