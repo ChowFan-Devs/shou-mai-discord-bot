@@ -19,17 +19,21 @@ const getMembers = () => {
 
     let members = "CHOWFAN MEMBERS:\n\n    ----";
     
-    users.forEach(user => {
+    users.forEach((user, i) => {
     if(chowfanIds.includes(user.ID))
     {
         members += 
-        `-
+        `
+        Member ${i+1}
+        =====
         ID: ${user.ID}
         NAME: ${user.NAME.length > 0 ? user.NAME.map(item => `${item}`).join(", ") : "UNKNOWN"}
         USERNAME: ${user.USERNAME}
         ABOUT: ${user.HARDCODED_ABOUT}
         PERCEPTION: ${user.ABOUT.length > 0 ? user.ABOUT.map(item => `${item}`).join(", ") : ""}
         FRIENDSHIP: ${user.FRIENDSHIP}/100
+        =====
+        
         `;
     }
     });
