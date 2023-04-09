@@ -24,6 +24,8 @@ const getMembers = () => {
     {
         members += 
         `
+        
+        --------------------------
         Member ${i+1}
         =====
         ID: ${user.ID}
@@ -33,7 +35,8 @@ const getMembers = () => {
         PERCEPTION: ${user.ABOUT.length > 0 ? user.ABOUT.map(item => `${item}`).join(", ") : ""}
         FRIENDSHIP: ${user.FRIENDSHIP}/100
         =====
-        
+        --------------------------
+
         `;
     }
     });

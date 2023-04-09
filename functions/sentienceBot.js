@@ -289,7 +289,7 @@ async function respondSentience(message) {
                 clearMemory();
             }
 
-            console.error("Error while creating chat completion:", error);
+            console.error("Error while creating chat completion :<< :", error);
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
@@ -356,9 +356,8 @@ async function respondSentience(message) {
         const errorEmbed = new EmbedBuilder()
             .setColor(0xFF0000)
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
-            .setTitle("An Error Occured")
+            .setTitle("An Error Occured :<")
             .setDescription(generateErrorMessage())
-            .setFooter("ERRORRORRERERROR")
             .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
         
         // Edit the message to display the error message
