@@ -1,11 +1,15 @@
 const { Configuration, OpenAIApi } = require("openai");
 const { openAiKey } = require('../config.json');
-const { brain } = require('./sentienceBrain')
+const { brain, getUserData } = require('./sentienceBrain')
+
+const userDataFilePath = "./database/userData.json";
 
 // at the top of your file
 const { EmbedBuilder } = require('discord.js');
 
 const fs = require("fs");
+const { json } = require("stream/consumers");
+const { format } = require("path");
 const historyFilePath = "./database/globalMessageHistory.json";
 
 const configuration = new Configuration({
@@ -81,6 +85,84 @@ async function saveGlobalMessageHistory(history) {
     fs.writeFileSync(historyFilePath, data, "utf-8");
 }
 
+async function readUserData() {
+    try {
+        const data = fs.readFileSync(userDataFilePath, "utf-8");
+        return JSON.parse(data);
+    } catch (err) {
+        return [];
+    }
+}
+
+async function saveUserData(userData) {
+    const data = JSON.stringify(userData);
+    fs.writeFileSync(userDataFilePath, data, "utf-8");
+}
+
+
+async function updateFriendshipValue(userID, friendshipChange) {
+    const userData = await readUserData();
+    const userIndex = userData.users.findIndex(user => user.ID === userID);
+
+    if (userIndex !== -1) {
+        // Calculate the new friendship value
+        let newFriendshipValue = userData.users[userIndex].FRIENDSHIP + friendshipChange;
+
+        // Check if the new value is within the allowed range
+        if (newFriendshipValue > 100) {
+            newFriendshipValue = 100;
+        } else if (newFriendshipValue < -100) {
+            newFriendshipValue = -100;
+        }
+
+        // Update the friendship value
+        userData.users[userIndex].FRIENDSHIP = newFriendshipValue;
+        saveUserData(userData);
+    }
+}
+
+
+const createFriendshipBar = (value) => {
+    const positiveEmoji = '❤️';
+    const negativeEmoji = '😡';
+    const emptyEmoji = '⚫';
+    const increment = 10;
+
+    if (value < -100 || value > 100) {
+        throw new Error('Value should be between -100 and 100');
+    }
+
+    let progress = '';
+    const emojisCount = Math.abs(Math.round(value / increment));
+
+    for (let i = 0; i < emojisCount; i++) {
+        progress += value >= 0 ? positiveEmoji : negativeEmoji;
+    }
+
+    for (let i = emojisCount; i < 10; i++) {
+        progress += emptyEmoji;
+    }
+
+    return progress;
+}
+
+const getDate = () => {
+    const currentDate = new Date();
+    const options = {
+    timeZone: 'Asia/Singapore',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+    };
+
+    const gmt8Date = currentDate.toLocaleString('en-US', options);
+    return gmt8Date
+}
+
+
 async function respondSentience(message) {
 
     const userID = message.author.id;
@@ -99,20 +181,32 @@ async function respondSentience(message) {
     // Load global message history from the filesystem
     const globalMessageHistory = await readGlobalMessageHistory();
 
+    ////////////
+
+    // const name = getUserData(userID)
+
+    ///////////
+
     // Add the new user message to the history
-    globalMessageHistory.push({ role: "user", content: `${userID}: ${userMessage}` });
+    globalMessageHistory.push({ role: "user", content: `{"${userID}": "${userMessage}", "date":"${getDate()}"}` });
 
     // If the history length is more than 16, remove the oldest message
-    if (globalMessageHistory.length > 16) {
+    if (globalMessageHistory.length > 25) {
         globalMessageHistory.shift();
     }
 
     const messages = [
         { role: "system", content: brain() },
-        { role: "user", content: "712437132240617572: Hello" },
-        { role: "assistant", content: `{"GPT":"Hello there, how can I assist you today?","Shou":"Oh, it's Ghegi, the *smart* developer 🙄. What do you want?","Emotion":"Normal"}` },
-        { role: "user", content: "712437132240617572: Hey, mention Gudo for me will you?" },
-        { role: "assistant", content: `{"GPT":"I'm sorry, but as an AI language model, I do not have the ability to mention users in a Discord server. However, you can mention Gudo by typing '@ Gudo' in the chat.","Shou":"Hmph, you think I need an ID to mention Gudo? Fine, fine. <@464791690750984193>, *Summa Cum Laude*, my godly powers have brought me here. 👼 Bow down before me and show me your **respect**. 😆😆😆","Emotion":"Laugh"}` },
+        { role: "user", content: `{"712437132240617572":"Hi, Shou"` },
+        { role: "assistant", content: `{"GPT":"Hello there!",
+        "Shou":"<@712437132240617572>, oh it's you. What do you want?",
+        "Emotion": "Normal",
+        "FriendshipChange": 0}` },
+        { role: "user", content: `{"712437132240617572":"You look wonderful today!"}` },
+        { role: "assistant", content: `{"GPT":"I'm just a computer program, I don't have a physical appearance.",
+        "Shou":"<@712437132240617572>, oh please don't try to flirt with me. It won't work. But I appreciate the compliment anyway. ",
+        "Emotion": "Blush",
+        "FriendshipChange": 2}` },
         ...globalMessageHistory
     ];
 
@@ -125,6 +219,7 @@ async function respondSentience(message) {
 
         let jsonObject = {}
         let shouValue = ""
+        let friendshipChange = 0
 
         try {
             const completion = await openai.createChatCompletion({
@@ -138,6 +233,7 @@ async function respondSentience(message) {
             try {
                 jsonObject = JSON.parse(response);
                 shouValue = jsonObject["Shou"];
+                friendshipChange = jsonObject["FriendshipChange"]
             } catch(e)
             {
                 shouValue = response
@@ -174,14 +270,20 @@ async function respondSentience(message) {
         // Save global message history to the filesystem
         saveGlobalMessageHistory(globalMessageHistory);
 
+        const userFriendship = getUserData(message.author.id).FRIENDSHIP
+
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue)
             .setThumbnail(emotionValue)
+            .setFooter({text: createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`})
 
         msgRef.edit("");
         msgRef.edit({ embeds: [messageEmbed] });
+
+        // Update the friendship value in userData.json
+        await updateFriendshipValue(userID, friendshipChange);
 
     } catch (error) {
         console.error("Error while creating chat completion:", error);
