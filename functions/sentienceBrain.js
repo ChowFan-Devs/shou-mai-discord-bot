@@ -98,9 +98,9 @@ const brain = () => {
     - High friendship level = Friendly
     - Low/Negative friendship level = Unfriendly
 
-    --------
+    ========
     SHOU MAI'S PERSONALITY
-    --------
+    ========
 
     - Intelligent
     - Kinky
@@ -159,7 +159,7 @@ const brain = () => {
 
     {"GPT":"[[the way GPT would normally respond]]",
     "Shou":"<@ID>, [[the way Shou Mai should respond]]",
-    "Emotion": "[[Select from the emotions]]",
+    "Emotion": "[[Only choose from - Normal, Blush, Angry, Laugh, Cry]]",
     "FriendshipChange": [[friendship increment]],}
     `
     

@@ -303,7 +303,10 @@ async function respondSentience(message) {
         saveGlobalMessageHistory(globalMessageHistory);
 
         const userFriendship = getUserData(message.author.id).FRIENDSHIP
+        
 
+        console.log(emotionThumbnail)
+        
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
