@@ -277,9 +277,21 @@ async function respondSentience(message) {
 
         
 
-        let emotionValue = emotions["Normal"]
+        let emotionThumbnail = emotions["Normal"]
+
         try {
-            emotionValue = emotions[jsonObject["Emotion"]];
+
+            emotionFromApi = jsonObject["Emotion"];
+
+            const emotions = ["Normal", "Laugh", "Angry", "Cry", "Blush"]
+
+            if(emotions.includes(emotionFromApi)) {
+                emotionThumbnail = emotions[emotionFromApi]
+            } else
+            {
+                emotionThumbnail = emotions["Normal"]
+            }
+
         } catch (error) {
             console.log("Could not get emotion");
         }
@@ -296,7 +308,7 @@ async function respondSentience(message) {
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue)
-            .setThumbnail(emotionValue)
+            .setThumbnail(emotionThumbnail)
             .setFooter({text: createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`})
 
         msgRef.edit("");
