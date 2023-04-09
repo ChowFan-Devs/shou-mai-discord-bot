@@ -266,8 +266,18 @@ async function respondSentience(message) {
                 friendshipChange = jsonObject["FriendshipChange"]
             } catch(e)
             {
-                console.log(e)
-                shouValue = "(Shou Mai experienced an error in her programming. >.<)"
+                console.error("Error while creating chat completion:", error);
+                const errorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
+                    .setTitle("An Error Occured")
+                    .setDescription(generateErrorMessage())
+                    .setFooter({text: `Error: Something about JSON parsing :/ try again `})
+                    .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
+
+                
+                // Edit the message to display the error message
+                return msgRef.edit({ embeds: [errorEmbed] });
             }
 
         } catch (error)
