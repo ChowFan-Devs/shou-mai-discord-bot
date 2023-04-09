@@ -182,10 +182,9 @@ module.exports = {
         ,
 
     async execute(interaction) {
-        
-        await interaction.deferReply({ephemeral: true});
-
         if (interaction.options.getSubcommand() === 'profile') {
+
+            await interaction.deferReply({ephemeral: false});
 
             userProfile = await getUserData(interaction.user.id)
 
@@ -209,7 +208,10 @@ module.exports = {
             interaction.editReply({embeds: [profileEmbed]})
         }
 
-        else if (interaction.options.getSubcommand() === 'about') {
+        else if (interaction.options.getSubcommand() === 'addabout') {
+
+            await interaction.deferReply({ephemeral: true});
+
             const description = interaction.options.getString("description");
             const success = updateUserAbout(interaction.user.id, description);
             
@@ -220,7 +222,10 @@ module.exports = {
             }
           }      
           
-        else if (interaction.options.getSubcommand() === 'delete') {
+        else if (interaction.options.getSubcommand() === 'deleteabout') {
+
+            await interaction.deferReply({ephemeral: true});
+
             const description = interaction.options.getString("description");
             const success = deleteUserDescription(interaction.user.id, description);
           
@@ -232,6 +237,9 @@ module.exports = {
           }
         
         else if (interaction.options.getSubcommand() === 'addname') {
+
+            await interaction.deferReply({ephemeral: true});
+
             const name = interaction.options.getString("name");
             const success = addUserName(interaction.user.id, name);
             
@@ -242,6 +250,9 @@ module.exports = {
             }
         }
         else if (interaction.options.getSubcommand() === 'deletename') {
+
+            await interaction.deferReply({ephemeral: true});
+            
             const name = interaction.options.getString("name");
             const success = deleteUserName(interaction.user.id, name);
             

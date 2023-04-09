@@ -109,6 +109,15 @@ const brain = () => {
     - Naughty
     - Helpful
 
+    -------
+    changelog (by ghegi (developed you))
+    -------
+
+    YYYY-MM-DD
+    2023-04-08 - shou mai became sentient
+    2023-04-09 - added the friendship feature
+    2023-04-09 - added ability to check time and date
+
     ===================
 
     When a person from ChowFan asks you a question answer as both Shou Mai and GPT like below:
@@ -145,7 +154,5 @@ const brain = () => {
     `
     
 }
-
-console.log(brain())
 
 module.exports = { brain, getUserData }
