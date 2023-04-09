@@ -105,6 +105,12 @@ const chowfanIds = [
     "632207264815644682"
 ]
 
+const authorizedIds = [
+  "712437132240617572",
+  "464791690750984193",
+];
+
+
 const createFriendshipBar = (value) => {
     const positiveEmoji = '❤️';
     const negativeEmoji = '😡';
@@ -128,7 +134,11 @@ const createFriendshipBar = (value) => {
 
     return progress;
 }
-  
+
+const clearMemory = () => {
+  const emptyMessageHistory = [];
+  fs.writeFileSync('./database/globalMessageHistory.json', JSON.stringify(emptyMessageHistory, null, 2));
+};
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -178,7 +188,11 @@ module.exports = {
                     .setDescription("A name you'd like to remove")
                 )
             )
-            
+            .addSubcommand(subcommand =>
+              subcommand
+                  .setName('clearmemory')
+                  .setDescription('Clear all of Shou Mai\'s memory (restricted access)')
+            )
         ,
 
     async execute(interaction) {
@@ -262,6 +276,17 @@ module.exports = {
                 interaction.editReply(`Error: The name "\`${name}\`" was not found.`);
             }
         }
+        else if (interaction.options.getSubcommand() === 'clearmemory') {
+          await interaction.deferReply({ephemeral: true});
+      
+          if (authorizedIds.includes(interaction.user.id)) {
+              clearMemory();
+              interaction.editReply('Shou Mai\'s memory has been cleared.');
+          } else {
+              interaction.editReply('You do not have permission to clear Shou Mai\'s memory.');
+          }
+      }
+      
           
           
 
