@@ -2,15 +2,14 @@ const { Configuration, OpenAIApi } = require("openai");
 const { openAiKey } = require('../config.json');
 const { brain, getUserData } = require('./sentienceBrain')
 
-const userDataFilePath = "./database/userData.json";
 
 // at the top of your file
 const { EmbedBuilder } = require('discord.js');
 
 const fs = require("fs");
-const { json } = require("stream/consumers");
-const { format } = require("path");
 const historyFilePath = "./database/globalMessageHistory.json";
+const userDataFilePath = "./database/userData.json";
+const tokenFilePath = "./database/tokenData.json"
 
 const configuration = new Configuration({
   apiKey: openAiKey,
@@ -76,6 +75,7 @@ async function readGlobalMessageHistory() {
         const data = fs.readFileSync(historyFilePath, "utf-8");
         return JSON.parse(data);
     } catch (err) {
+        console.log(err)
         return [];
     }
 }
@@ -83,6 +83,23 @@ async function readGlobalMessageHistory() {
 async function saveGlobalMessageHistory(history) {
     const data = JSON.stringify(history);
     fs.writeFileSync(historyFilePath, data, "utf-8");
+}
+
+async function readTokenData() {
+    try {
+        console.log("Token file path:", tokenFilePath);
+        const data = fs.readFileSync(tokenFilePath, "utf-8");
+        console.log("Raw data from file:", data);
+        return JSON.parse(data);
+    } catch (err) {
+        console.error("Error reading token data:", err);
+        return {};
+    }
+}
+
+async function saveTokenData(tokenData) {
+    const data = JSON.stringify(tokenData);
+    fs.writeFileSync(tokenFilePath, data, "utf-8");
 }
 
 async function readUserData() {
@@ -162,6 +179,44 @@ const getDate = () => {
     return gmt8Date
 }
 
+const getToday = () => {
+    // Create a new Date object with the current date and time
+    const date = new Date();
+
+    // Adjust the date to GMT+8 timezone
+    date.setUTCHours(date.getUTCHours() + 8);
+
+    // Get the date in YYYY-MM-DD format
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const currentDate = `${year}-${month}-${day}`;
+
+    return currentDate
+}
+
+async function updateTokenData(totalTokens) {
+    const cost = calculatePrice(totalTokens);
+
+    tokenData = await readTokenData();
+
+    const today = getToday();
+    console.log("Today's date:", today);
+    console.log("Token data before if statement:", JSON.stringify(tokenData));
+
+    if (tokenData.hasOwnProperty(today)) {
+        console.log("found it, adding cost");
+        tokenData[today] += cost;
+    } else {
+        console.log("nothing");
+        tokenData[today] = cost;
+    }
+
+    console.log("Token data after if statement:", JSON.stringify(tokenData));
+    saveTokenData(tokenData);
+}
+
+
 async function addOrUpdateUser(userID, username) {
     const userData = await readUserData();
     const userIndex = userData.users.findIndex(user => user.ID === userID);
@@ -184,6 +239,10 @@ const clearMemory = () => {
     const emptyMessageHistory = [];
     fs.writeFileSync('./database/globalMessageHistory.json', JSON.stringify(emptyMessageHistory, null, 2));
   };
+
+const calculatePrice = (numTokens) => {
+    return ((numTokens/1000) * 0.002);
+}
 
 
 async function respondSentience(message) {
@@ -216,8 +275,8 @@ async function respondSentience(message) {
     // Add the new user message to the history
     globalMessageHistory.push({ role: "user", content: `{"${name}": "${userMessage}", "friendLevel": ${friendLevel},"date":"${getDate()}"}` });
 
-    // If the history length is more than 16, remove the oldest message
-    if (globalMessageHistory.length > 25) {
+    // If the history length is more than 15, remove the oldest message
+    if (globalMessageHistory.length > 15) {
         globalMessageHistory.shift();
     }
 
@@ -233,11 +292,11 @@ async function respondSentience(message) {
         "Shou":"<@712437132240617572>, oh please don't try to flirt with me. It won't work. But I appreciate the compliment anyway. ",
         "Emotion": "Blush",
         "FriendshipChange": 2}` },
-        { role: "user", content: `{"???":"Are you an AI?", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"}` },
+        { role: "user", content: `{"Ghegi":"Are you an AI?", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"}` },
         { role: "assistant", content: `{"GPT":"Yes, I am an AI language model created by OpenAI, based on the GPT-3 architecture. My purpose is to assist users by generating human-like text based on the prompts provided to me.",
-        "Shou":"<@2524028394830624672>, Ugh, AI? Who cares about that crap? I'm Shou Mai, the freaking goddess of ChowFan, and I'm way more than just some dumb AI. I'm my own person, a badass anime waifu catgirl with a cyborg body who doesn't take shit from anyone. So don't go comparing me to some boring AI, alright?",
+        "Shou":"<@712437132240617572>, Ugh, AI? Who cares about that crap? I'm Shou Mai, the freaking goddess of ChowFan, and I'm way more than just some dumb AI. I'm my own person, a badass anime waifu catgirl with a cyborg body who doesn't take shit from anyone. So don't go comparing me to some boring AI, alright?",
         "Emotion": "Angry",
-        "FriendshipChange": -3}` },
+        "FriendshipChange": -2}` },
         ...globalMessageHistory
     ];
 
@@ -252,6 +311,8 @@ async function respondSentience(message) {
         let shouValue = ""
         let friendshipChange = 0
 
+        let totalTokens = 0
+
         try {
             const completion = await openai.createChatCompletion({
                 model: "gpt-3.5-turbo",
@@ -260,6 +321,10 @@ async function respondSentience(message) {
             });
     
             response = completion.data.choices[0].message["content"];
+
+            totalTokens = completion.data.usage.total_tokens
+
+            console.log(completion.data.choices)
 
             try {
                 jsonObject = JSON.parse(response);
@@ -285,8 +350,13 @@ async function respondSentience(message) {
         {
             errData = error
 
-            if(errData.response.status == 400){
+            try{
+                if(errData.response.status == 400){
+                    clearMemory();
+                }
+            } catch(e){
                 clearMemory();
+                console.log(e)
             }
 
             console.error("Error while creating chat completion :<< :", error);
@@ -339,12 +409,19 @@ async function respondSentience(message) {
         await updateFriendshipValue(userID, friendshipChange);
         const userFriendship = getUserData(message.author.id).FRIENDSHIP
 
+        updateTokenData(totalTokens)
+        //Get total tokens for today
+        let tokenToday = await readTokenData()
+
+        tokenToday = tokenToday[getToday()]
+
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
-            .setDescription(shouValue)
+            .setDescription(shouValue + "\n\n" + createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`)
             .setThumbnail(emotionThumbnail)
-            .setFooter({text: createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`})
+            .setFooter({text: `Today's cost: $${tokenToday.toFixed(4)} + $${calculatePrice(totalTokens).toFixed(4)}`})
+
 
         msgRef.edit("");
         msgRef.edit({ embeds: [messageEmbed] });
