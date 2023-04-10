@@ -11,6 +11,8 @@ const historyFilePath = "./database/globalMessageHistory.json";
 const userDataFilePath = "./database/userData.json";
 const tokenFilePath = "./database/tokenData.json"
 
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
+
 const configuration = new Configuration({
   apiKey: openAiKey,
 });
@@ -70,6 +72,28 @@ function generateErrorMessage() {
     return errorMessage
 }
 
+const generateErrorEmbed = () => {
+    const errorEmbed = new EmbedBuilder()
+        .setColor(0xFF0000)
+        .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
+        .setTitle("An Error Occured")
+        .setDescription(generateErrorMessage())
+        .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
+    
+    return errorEmbed
+}
+
+const generateErrorTry = () => {
+    const row = new ActionRowBuilder()
+			.addComponents(
+				new ButtonBuilder()
+					.setCustomId('retry')
+					.setLabel('Try again')
+					.setStyle(ButtonStyle.Primary),
+			);
+    return row
+}
+
 async function readGlobalMessageHistory() {
     try {
         const data = fs.readFileSync(historyFilePath, "utf-8");
@@ -87,9 +111,7 @@ async function saveGlobalMessageHistory(history) {
 
 async function readTokenData() {
     try {
-        console.log("Token file path:", tokenFilePath);
         const data = fs.readFileSync(tokenFilePath, "utf-8");
-        console.log("Raw data from file:", data);
         return JSON.parse(data);
     } catch (err) {
         console.error("Error reading token data:", err);
@@ -201,8 +223,6 @@ async function updateTokenData(totalTokens) {
     tokenData = await readTokenData();
 
     const today = getToday();
-    console.log("Today's date:", today);
-    console.log("Token data before if statement:", JSON.stringify(tokenData));
 
     if (tokenData.hasOwnProperty(today)) {
         console.log("found it, adding cost");
@@ -212,7 +232,6 @@ async function updateTokenData(totalTokens) {
         tokenData[today] = cost;
     }
 
-    console.log("Token data after if statement:", JSON.stringify(tokenData));
     saveTokenData(tokenData);
 }
 
@@ -324,7 +343,6 @@ async function respondSentience(message) {
 
             totalTokens = completion.data.usage.total_tokens
 
-            console.log(completion.data.choices)
 
             try {
                 jsonObject = JSON.parse(response);
@@ -333,17 +351,12 @@ async function respondSentience(message) {
             } catch(e)
             {
                 console.error("Error while creating chat completion:", error);
-                const errorEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
-                    .setTitle("An Error Occured")
-                    .setDescription(generateErrorMessage())
-                    .setFooter({text: `Error: Something about JSON parsing :/ try again `})
-                    .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
 
-                
+                const errorEmbed = generateErrorEmbed()
+                    .setFooter({text: `Error: Something about JSON parsing :/ try again `})
+
                 // Edit the message to display the error message
-                return msgRef.edit({ embeds: [errorEmbed] });
+                return msgRef.edit({ embeds: [errorEmbed], components: [generateErrorTry()] });
             }
 
         } catch (error)
@@ -360,17 +373,12 @@ async function respondSentience(message) {
             }
 
             console.error("Error while creating chat completion :<< :", error);
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
-                .setTitle("An Error Occured")
+            const errorEmbed = generateErrorEmbed()
                 .setDescription(errData.response.status == 400 ? "Oops, an error 400. Let me fix it myself by clearing my memory :< Can you try messaging again?" : generateErrorMessage())
                 .setFooter({text: `Error: ${errData.response.status} ${errData.response.statusText}`})
-                .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
-
             
             // Edit the message to display the error message
-            return msgRef.edit({ embeds: [errorEmbed] });
+            return msgRef.edit({ embeds: [errorEmbed], components: [generateErrorTry()] });
         }
 
         
@@ -415,30 +423,26 @@ async function respondSentience(message) {
 
         tokenToday = tokenToday[getToday()]
 
+        
+
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue + "\n\n" + createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`)
             .setThumbnail(emotionThumbnail)
             .setFooter({text: `Today's cost: $${tokenToday.toFixed(4)} + $${calculatePrice(totalTokens).toFixed(4)}`})
-
+        
 
         msgRef.edit("");
-        msgRef.edit({ embeds: [messageEmbed] });
+        msgRef.edit({ embeds: [messageEmbed]});
 
         console.log(jsonObject)
 
     } catch (error) {
         console.error("Error while creating chat completion:", error);
-        const errorEmbed = new EmbedBuilder()
-            .setColor(0xFF0000)
-            .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
-            .setTitle("An Error Occured :<")
-            .setDescription(generateErrorMessage())
-            .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
-        
+        const errorEmbed = generateErrorEmbed()
         // Edit the message to display the error message
-        msgRef.edit({ embeds: [errorEmbed] });
+        msgRef.edit({ embeds: [errorEmbed], components: [generateErrorTry()] });
     }
 }
 
