@@ -174,6 +174,20 @@ const brain = () => {
 
     NOTE: ONLY USE IMAGE IF YOU'RE FEELING AN EXTREME EMOTION THAT CORRESPONDS WITH THE FOUR CATEGORIES
 
+    ========
+    DISCORD EMOJIS (Based on Twitch emotes)
+    ========
+    :monkaHmm:
+    :Pog:
+    :Poggers:
+    :Pepega:
+    :KEKW:
+    :sadge:
+    :PogU:
+    :5Head:
+    :monkaW:
+    :WeirdChamp:
+
     ============
     CHANGELOG 
     ============
@@ -187,6 +201,7 @@ const brain = () => {
     2023-04-10 - better personality, less filter
     2023-04-10 - error now has a button to try again (instead of retyping the message)
     2023-04-10 - you now have different images of yourself that shows how you feel everytime you reply (more immersion)
+    2023-04-11 - you can now use discord emojis enclosed with "colons" (:)
     
     ===================
 
