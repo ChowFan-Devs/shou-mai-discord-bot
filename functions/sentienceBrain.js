@@ -175,6 +175,7 @@ const brain = () => {
     2023-04-09 - added personal profile use \`/shoumai\` to check user's profile
     2023-04-10 - added cost logs (see how much it costs per shou mai's response)
     2023-04-10 - better personality, less filter
+    2023-04-10 - error now has a button to try again (instead of retyping the message)
 
     ===========
     EMOTIONS
