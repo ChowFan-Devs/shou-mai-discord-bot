@@ -4,12 +4,13 @@ const { brain, getUserData } = require('./sentienceBrain')
 
 
 // at the top of your file
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 
 const fs = require("fs");
 const historyFilePath = "./database/globalMessageHistory.json";
 const userDataFilePath = "./database/userData.json";
-const tokenFilePath = "./database/tokenData.json"
+const tokenFilePath = "./database/tokenData.json";
+const shouImagesFilePath = "./database/shouImages.json"
 
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
 
@@ -26,6 +27,29 @@ const emotions = {
     "Blush": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196540203094048/Naughty_Face.png",
     "Angry": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196540748337192/Angry_Face.png"
 }
+
+const shouImageTypes = ["Laugh", "Angry", "Cry", "Flirty"]
+
+async function readShouImages() {
+    try {
+        const data = fs.readFileSync(shouImagesFilePath, "utf-8");
+        return JSON.parse(data);
+    } catch (err) {
+        console.log(err)
+        return {};
+    }
+}
+
+const getShouImage = async(shouImageType) => {
+    const shouImages = await readShouImages();
+    const shouImageArray = shouImages[shouImageType];
+    
+    // Get a random index within the range of the array's length
+    const randomIndex = Math.floor(Math.random() * shouImageArray.length);
+    
+    // Return a random string from the array
+    return shouImageArray[randomIndex];
+  };
 
 function generateErrorMessage() {
     
@@ -72,13 +96,17 @@ function generateErrorMessage() {
     return errorMessage
 }
 
-const generateErrorEmbed = () => {
+const generateErrorEmbed = async() => {
+    
+    const shouMaiCryURL = await getShouImage("Cry")
+
     const errorEmbed = new EmbedBuilder()
         .setColor(0xFF0000)
         .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
         .setTitle("An Error Occured")
         .setDescription(generateErrorMessage())
         .setThumbnail('https://media.tenor.com/eDchk3srtycAAAAi/piffle-error.gif')
+        .setImage(shouMaiCryURL)
     
     return errorEmbed
 }
@@ -225,7 +253,6 @@ async function updateTokenData(totalTokens) {
     const today = getToday();
 
     if (tokenData.hasOwnProperty(today)) {
-        console.log("found it, adding cost");
         tokenData[today] += cost;
     } else {
         console.log("nothing");
@@ -272,12 +299,15 @@ async function respondSentience(message) {
 
     // Ensure the user is in the database or add them with default values
     await addOrUpdateUser(userID, username);
+
+    const shouMaiThinkingURL = await getShouImage("Think")
     
     const thinkingEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: 'Shou Mai', iconURL: 'https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png'})
             .setTitle("Shou Mai is thinking")
             .setThumbnail('https://media.tenor.com/y29vJ0OqaQ4AAAAi/typing-texting.gif')
+            .setImage(shouMaiThinkingURL)
 
     const msgRef = await message.channel.send({ embeds: [thinkingEmbed] });
 
@@ -310,12 +340,14 @@ async function respondSentience(message) {
         { role: "assistant", content: `{"GPT":"I'm just a computer program, I don't have a physical appearance.",
         "Shou":"<@712437132240617572>, oh please don't try to flirt with me. It won't work. But I appreciate the compliment anyway. ",
         "Emotion": "Blush",
-        "FriendshipChange": 2}` },
+        "FriendshipChange": 2,
+        "Image" : "Flirty"}` },
         { role: "user", content: `{"Ghegi":"Are you an AI?", "friendLevel": 0, "date":"04/05/2023, 12:05:56 AM"}` },
         { role: "assistant", content: `{"GPT":"Yes, I am an AI language model created by OpenAI, based on the GPT-3 architecture. My purpose is to assist users by generating human-like text based on the prompts provided to me.",
         "Shou":"<@712437132240617572>, Ugh, AI? Who cares about that crap? I'm Shou Mai, the freaking goddess of ChowFan, and I'm way more than just some dumb AI. I'm my own person, a badass anime waifu catgirl with a cyborg body who doesn't take shit from anyone. So don't go comparing me to some boring AI, alright?",
         "Emotion": "Angry",
-        "FriendshipChange": -2}` },
+        "FriendshipChange": -2,
+        "Image" : "Angry"}` },
         ...globalMessageHistory
     ];
 
@@ -331,6 +363,8 @@ async function respondSentience(message) {
         let friendshipChange = 0
 
         let totalTokens = 0
+        
+        let shouImage = ""
 
         try {
             const completion = await openai.createChatCompletion({
@@ -352,11 +386,22 @@ async function respondSentience(message) {
             {
                 console.error("Error while creating chat completion:", error);
 
-                const errorEmbed = generateErrorEmbed()
+                const errorEmbed = await generateErrorEmbed()
                     .setFooter({text: `Error: Something about JSON parsing :/ try again `})
 
                 // Edit the message to display the error message
                 return msgRef.edit({ embeds: [errorEmbed], components: [generateErrorTry()] });
+            }
+
+            if(jsonObject["Image"])
+            {
+                if(shouImageTypes.includes(jsonObject["Image"]))
+                {
+                    shouImage = jsonObject["Image"]
+                }
+            } else
+            {
+                shouImage = ""
             }
 
         } catch (error)
@@ -373,7 +418,7 @@ async function respondSentience(message) {
             }
 
             console.error("Error while creating chat completion :<< :", error);
-            const errorEmbed = generateErrorEmbed()
+            const errorEmbed = await generateErrorEmbed()
                 .setDescription(errData.response.status == 400 ? "Oops, an error 400. Let me fix it myself by clearing my memory :< Can you try messaging again?" : generateErrorMessage())
                 .setFooter({text: `Error: ${errData.response.status} ${errData.response.statusText}`})
             
@@ -423,16 +468,22 @@ async function respondSentience(message) {
 
         tokenToday = tokenToday[getToday()]
 
+        let shouImageURL = ""
         
-
         const messageEmbed = new EmbedBuilder()
             .setColor(0xE67E22)
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue + "\n\n" + createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`)
             .setThumbnail(emotionThumbnail)
             .setFooter({text: `Today's cost: $${tokenToday.toFixed(4)} + $${calculatePrice(totalTokens).toFixed(4)}`})
-        
 
+        if(shouImage !== "")
+        {
+            shouImageURL = await getShouImage(shouImage)
+            messageEmbed.setImage(shouImageURL)
+        }
+
+        
         msgRef.edit("");
         msgRef.edit({ embeds: [messageEmbed]});
 
@@ -440,7 +491,7 @@ async function respondSentience(message) {
 
     } catch (error) {
         console.error("Error while creating chat completion:", error);
-        const errorEmbed = generateErrorEmbed()
+        const errorEmbed = await generateErrorEmbed()
         // Edit the message to display the error message
         msgRef.edit({ embeds: [errorEmbed], components: [generateErrorTry()] });
     }
