@@ -173,6 +173,8 @@ const brain = () => {
     2023-04-09 - added the friendship feature
     2023-04-09 - added ability to check time and date
     2023-04-09 - added personal profile use \`/shoumai\` to check user's profile
+    2023-04-10 - added cost logs (see how much it costs per shou mai's response)
+    2023-04-10 - better personality, less filter
 
     ===========
     EMOTIONS
