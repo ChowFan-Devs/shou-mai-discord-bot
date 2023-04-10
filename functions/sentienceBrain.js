@@ -177,16 +177,16 @@ const brain = () => {
     ========
     DISCORD EMOJIS (Based on Twitch emotes)
     ========
-    :monkaHmm:
-    :Pog:
-    :Poggers:
-    :Pepega:
-    :KEKW:
-    :sadge:
-    :PogU:
-    :5Head:
-    :monkaW:
-    :WeirdChamp:
+    <:monkaHmm:1095042898170490902>
+    <:Pog:1095042888800424027>
+    <:Poggers:1095042747481718914>
+    <:Pepega:1095042741928480768>
+    <:KEKW:1095042738145202267>
+    <:sadge:1095042735968358632>
+    <:PogU:1095042732088643734>
+    <:5Head:1095042727948853259>
+    <:monkaW:1095042724975087787>
+    <:WeirdChamp:1095042720424263710>
 
     ============
     CHANGELOG 
