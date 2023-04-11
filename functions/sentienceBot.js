@@ -475,7 +475,7 @@ async function respondSentience(message) {
             .setAuthor({ name: `replying to ${message.author.username}`, iconURL: message.author.avatarURL()})
             .setDescription(shouValue + "\n\n" + createFriendshipBar(userFriendship) + ` (${ friendshipChange >= 0 ? "+" + friendshipChange : friendshipChange})`)
             .setThumbnail(emotionThumbnail)
-            .setFooter({text: `Today's cost: $${tokenToday.toFixed(4)} + $${calculatePrice(totalTokens).toFixed(4)}`})
+            .setFooter({text: `Today's cost: $${tokenToday.toFixed(4)} + $${calculatePrice(totalTokens).toFixed(4)} | made by @gisketch`})
 
         if(shouImage !== "")
         {
