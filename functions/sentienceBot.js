@@ -21,11 +21,11 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const emotions = {
-    "Normal": "https://media.discordapp.net/attachments/1094196420661231680/1094196540479905812/Normal_Face.png",
-    "Laugh": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196539720732762/Laughing_Face.png",
-    "Cry": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196539431329883/Crying_Face.png",
-    "Blush": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196540203094048/Naughty_Face.png",
-    "Angry": "https://cdn.discordapp.com/attachments/1094196420661231680/1094196540748337192/Angry_Face.png"
+    "Normal": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Normal.png",
+    "Laugh": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Laugh.png",
+    "Cry": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Cry.png",
+    "Blush": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Blush.png",
+    "Angry": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Angry.png"
 }
 
 const shouImageTypes = ["Laugh", "Angry", "Cry", "Flirty"]
