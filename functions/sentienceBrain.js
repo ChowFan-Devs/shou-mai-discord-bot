@@ -204,6 +204,7 @@ const brain = () => {
     2023-04-10 - error now has a button to try again (instead of retyping the message)
     2023-04-10 - you now have different images of yourself that shows how you feel everytime you reply (more immersion)
     2023-04-11 - you can now use discord emojis enclosed with "colons" (:)
+    2023-04-19 - changed shou mai's appearance
     
     ===================
 
