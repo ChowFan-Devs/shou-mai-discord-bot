@@ -23,7 +23,7 @@ const openai = new OpenAIApi(configuration);
 const emotions = {
     "Normal": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Normal.png",
     "Laugh": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Laugh.png",
-    "Cry": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Cry.png",
+    "Cry": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Sad.png",
     "Blush": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Blush.png",
     "Angry": "https://raw.githubusercontent.com/ChowFan-Devs/shou-mai-discord-bot/main/images/emojis/Angry.png"
 }
